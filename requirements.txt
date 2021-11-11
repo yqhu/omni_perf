@@ -1,0 +1,8 @@
+drawSvg==1.8.3
+lxml==4.6.3
+psutil
+pyinstrument==4.0.4
+pyinstrument-flame==1.0.2
+pynvml==8.0.4
+six
+svg-stack==0.1.0
