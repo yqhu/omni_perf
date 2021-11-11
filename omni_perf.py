@@ -22,28 +22,30 @@ def create_svg(svg_name, info, label1, label2, WIDTH=1200, HEIGHT=200):
     x_offset = WIDTH * 0.009
     x_scale = (WIDTH - 2 * x_offset) / info[-1][0]
     y_scale = HEIGHT / 200
+    cpu_max = max([item[1] for item in info])
+    mem_max = max([item[2] for item in info])
     for i in range(1, len(info)):
         prev = info[i - 1]
         line = info[i]
         x0 = x_scale * prev[0] + x_offset
         x1 = x_scale * line[0] + x_offset
         # CPU
-        y = y_scale * prev[1]
+        y = 0.475 * HEIGHT / cpu_max * prev[1]
         y_offset = HEIGHT / 2
         r = draw.Rectangle(x0, 0 + y_offset, x1 - x0, y, fill='#83e4eb')
         r.appendTitle(f'{label1}: {prev[1]:.1f}')
         d_cpu.append(r)
         # MEM
         y_offset = HEIGHT
-        y = y_scale * prev[2] * 1
+        y = 0.475 * HEIGHT / mem_max * prev[2]
         r = draw.Rectangle(x0, 0, x1 - x0, y, fill='#33ffc4')
         r.appendTitle(f'{label2}: {prev[2]:.1f}') 
         d_cpu.append(r)
         
     d_cpu.append(draw.Rectangle(x_scale * info[0][0] + x_offset, 0 + HEIGHT/2, WIDTH - 2*x_offset, 1, fill='#83e4eb'))
-    d_cpu.append(draw.Text(label1, 24, x_offset, HEIGHT/2 + 20, fill='white'))
+    d_cpu.append(draw.Text(label1 + f' (Max = {cpu_max:.1f}%)', 32, x_offset, HEIGHT/2 + 30, fill='white'))
     d_cpu.append(draw.Rectangle(x_scale * info[0][0] + x_offset, 0, WIDTH - 2*x_offset, 1, fill='#33ffc4'))
-    d_cpu.append(draw.Text(label2, 24, x_offset, 0 + 20, fill='white'))
+    d_cpu.append(draw.Text(label2 + f' (Max = {mem_max:.1f}%)', 32, x_offset, 0 + 30, fill='white'))
 
     d_cpu.saveSvg(svg_name)
 
@@ -134,7 +136,7 @@ def main():
 
     doc = ss.Document()
     layout = ss.VBoxLayout()
-    layout.setSpacing(10)
+    layout.setSpacing(5)
 
     layout.addSVG(outname + '_cs.svg')
     layout.addSVG(outname + '_cpu.svg')
