@@ -23,4 +23,6 @@ omni_perf combines system-wide activities (CPU and CPU memory utilization; GPU a
     --sys_interval SYS_INTERVAL
                             system activity sampling interval (default: 1 sample/seconcd)
 
-The results (`perf_output.svg` and `perf_output.html` if output name is not set with `--output` or `-o`) can be opened in a web browser.
+The results (`perf_output.svg` and `perf_output.html` if output name is not set with `--output` or `-o`) can be opened in a web browser.  Below is an  example output flame chart:
+
+![Example output flame chart](imgs/omni_perf_flamechart.png)

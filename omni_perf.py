@@ -79,7 +79,7 @@ class SysInfo:
             create_svg(self.output + '_gpu.svg', self.info_gpu, '% GPU', '% G-RAM')
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('script', help='python script to profile')
     parser.add_argument('-o', '--output', type=str, default='perf_output', help='output file name without extension (default: perf_output)')
@@ -89,8 +89,8 @@ if __name__ == '__main__':
     print('=' * 40)
     print('Script to profile:', args.script)
     print(f'Profiling output: {args.output}[.svg/.html]')
-    print('Profiler sampling frequency:', args.prof_interval, 'Hz')
-    print('System activity sampling frequency:', args.sys_interval, 'Hz')
+    print('Profiler sampling frequency:', int(1/args.prof_interval), 'Hz')
+    print('System activity sampling frequency:', int(1/args.sys_interval), 'Hz')
     pynvml.nvmlInit()
     print('Number of GPUs:', pynvml.nvmlDeviceGetCount())
     print('=' * 40)
@@ -143,3 +143,7 @@ if __name__ == '__main__':
 
     doc.setLayout(layout)
     doc.save(outname + '.svg')
+
+
+if __name__ == '__main__':
+    main()
