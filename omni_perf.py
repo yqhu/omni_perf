@@ -59,9 +59,12 @@ class SysInfo:
         self.info_gpu = []
     
     def start(self):
-        pynvml.nvmlInit()
-        gpu_handle =  pynvml.nvmlDeviceGetHandleByIndex(0)
-        has_gpu = pynvml.nvmlDeviceGetCount() > 0
+        try:
+            pynvml.nvmlInit()
+            gpu_handle =  pynvml.nvmlDeviceGetHandleByIndex(0)
+            has_gpu = pynvml.nvmlDeviceGetCount() > 0
+        except:
+            has_gpu = False
 
         start = time.time()
         while self.flag.value:
@@ -93,8 +96,11 @@ def main():
     print(f'Profiling output: {args.output}[.svg/.html]')
     print('Profiler sampling frequency:', int(1/args.prof_interval), 'Hz')
     print('System activity sampling frequency:', int(1/args.sys_interval), 'Hz')
-    pynvml.nvmlInit()
-    print('Number of GPUs:', pynvml.nvmlDeviceGetCount())
+    try:
+        pynvml.nvmlInit()
+        print('Number of GPUs:', pynvml.nvmlDeviceGetCount())
+    except:
+        print('No GPU found')
     print('=' * 40)
 
     progname = args.script
