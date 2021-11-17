@@ -4,7 +4,7 @@ import os
 import time
 import re
 from multiprocessing import Process, Manager, Value
-import argparse
+import optparse
 import runpy
 import pyinstrument
 from pyinstrument import Profiler, renderers
@@ -85,17 +85,50 @@ class SysInfo:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('script', help='python script to profile')
-    parser.add_argument('-o', '--output', type=str, default='perf_output', help='output file name without extension (default: perf_output)')
-    parser.add_argument('--prof_interval', type=float, default=0.001, help='profiler sampling interval (default: 1000 samples/seconcd)')
-    parser.add_argument('--sys_interval', type=float, default=1, help='system activity sampling interval (default: 1 sample/seconcd)')
-    args = parser.parse_args()
+    usage = f'usage: python {sys.argv[0]} [options] scriptfile [arg] ...'
+    parser = optparse.OptionParser(usage=usage, version='0.1')
+    parser.allow_interspersed_args = False
+
+    parser.add_option(
+        '-o',
+        '--output',
+        dest='output',
+        action='store',
+        type='string',
+        help='output file name without extension (default: perf_output)',
+        default='perf_output',
+    )
+
+    parser.add_option(
+        '-p',
+        '--prof_interval',
+        dest='prof_interval',
+        action='store',
+        type='float',
+        help='profiler sampling interval (default: 100 samples/seconcd)',
+        default='0.01',
+    )
+
+    parser.add_option(
+        '-s',
+        '--sys_interval',
+        dest='sys_interval',
+        action='store',
+        type='float',
+        help='system activity sampling interval (default: 1 sample/seconcd)',
+        default='1',
+    )   
+
+    options, args = parser.parse_args()
+    if not args:
+        print(usage)
+        return
+    
     print('=' * 40)
-    print('Script to profile:', args.script)
-    print(f'Profiling output: {args.output}[.svg/.html]')
-    print('Profiler sampling frequency:', int(1/args.prof_interval), 'Hz')
-    print('System activity sampling frequency:', int(1/args.sys_interval), 'Hz')
+    print('Script file to profile:', args)
+    print(f'Profiling output: {options.output}[.svg/.html]')
+    print('Profiler sampling frequency:', int(1/options.prof_interval), 'Hz')
+    print('System activity sampling frequency:', int(1/options.sys_interval), 'Hz')
     try:
         pynvml.nvmlInit()
         print('Number of GPUs:', pynvml.nvmlDeviceGetCount())
@@ -103,11 +136,11 @@ def main():
         print('No GPU found')
     print('=' * 40)
 
-    progname = args.script
-    outname = args.output
+    progname = args[0]
+    outname = options.output
 
     flag = Value('b', 1)
-    info = SysInfo(output=outname, flag=flag, interval=args.sys_interval)
+    info = SysInfo(output=outname, flag=flag, interval=options.sys_interval)
     p = Process(target=info.start, args=())
     p.start()
 
@@ -117,10 +150,11 @@ def main():
     code = "run_path(progname, run_name='__main__')"
     globs = {"run_path": runpy.run_path, "progname": progname}
 
-    profiler = Profiler(interval=args.prof_interval, async_mode='disabled')
+    profiler = Profiler(interval=options.prof_interval, async_mode='disabled')
 
     profiler.start()
 
+    sys.argv = args
     try:
         exec(code, globs, None)
     except (SystemExit, KeyboardInterrupt):
