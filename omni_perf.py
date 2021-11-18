@@ -105,8 +105,8 @@ def main():
         dest='prof_interval',
         action='store',
         type='float',
-        help='profiler sampling interval (default: 100 samples/seconcd)',
-        default='0.01',
+        help='profiler sampling interval (default: 1000 samples/seconcd)',
+        default='0.001',
     )
 
     parser.add_option(
@@ -162,6 +162,9 @@ def main():
 
     session = profiler.stop()
 
+    flag.value = 0
+    p.join()
+
     renderer = renderers.HTMLRenderer(show_all=True, timeline=True)
     with open(outname + '.html', 'w') as f:
         f.write(renderer.render(session))
@@ -169,10 +172,6 @@ def main():
     renderer = pyinstrument_flame.FlameGraphRenderer(title=progname, flamechart=True)
     with open(outname + '_cs.svg', 'w') as f:
         f.write(renderer.render(session))
-
-    flag.value = 0
-
-    p.join()
 
     doc = ss.Document()
     layout = ss.VBoxLayout()
