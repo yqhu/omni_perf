@@ -27,7 +27,7 @@ The results (`perf_output.svg` and `perf_output.html` if output name is not set 
 ![Example output flame chart](imgs/omni_perf_flamechart.png)
 
 ## More examples
-The two examples below were run on an AWS g4dn.12xlarge instance with 4 Nvidia T4 GPUs.  The serial data copy pattern of DataParallel is obvious on GPU utilization sequence.
+The two examples below were run on an AWS g4dn.12xlarge instance with 4 Nvidia T4 GPUs.  The serial data copy pattern of DataParallel is obvious on GPU utilization sequence.  On the other hand, it is also clear that pyinstrument is not able to profile other processes.
 
 ### PyTorch DataParallel multi GPU training
     python omni_perf.py -s 0.25 -o dp_output examples/pytorch_train_dp.py
