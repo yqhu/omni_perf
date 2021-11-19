@@ -86,7 +86,7 @@ class SysInfo:
             # TODO: adjust sleep duration based on actual timing
             time.sleep(self.interval)
 
-        create_svg(self.output + '_cpu.svg', self.info, '% CPU', '% MEM')
+        create_svg(self.output + '_cpu.svg', self.info, 'CPU', 'MEM')
 
         c_max = 0
         m_max = 0
@@ -94,13 +94,13 @@ class SysInfo:
             c_max = max(c_max, max([item[1] for item in self.info_gpu[i]]))
             m_max = max(m_max, max([item[2] for item in self.info_gpu[i]]))
         for i in range(num_gpus):
-            create_svg(self.output + f'_gpu_{i}.svg', self.info_gpu[i], f'% GPU {i}', f'% GMEM {i}', 
+            create_svg(self.output + f'_gpu_{i}.svg', self.info_gpu[i], f'GPU {i}', f'MEM {i}', 
             cpu_max=c_max, mem_max=m_max)
 
 
 def main():
     usage = f'usage: python {sys.argv[0]} [options] scriptfile [arg] ...'
-    parser = optparse.OptionParser(usage=usage, version='0.1')
+    parser = optparse.OptionParser(usage=usage, version='omni_perf 0.1')
     parser.allow_interspersed_args = False
 
     parser.add_option(
